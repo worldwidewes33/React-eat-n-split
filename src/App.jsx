@@ -28,7 +28,13 @@ function App() {
     </li>
   ));
 
-  return <ul>{userAvatars}</ul>;
+  return (
+    <>
+      <ul>{userAvatars}</ul>
+      <AddFriendForm />
+      <button className="btn add-btn">Add Friend</button>
+    </>
+  );
 }
 
 function UserAvatar({ user }) {
@@ -49,6 +55,23 @@ function UserAvatar({ user }) {
       </div>
       <button className="btn">Select</button>
     </div>
+  );
+}
+
+function AddFriendForm() {
+  return (
+    <form className="add-friend-form">
+      <label htmlFor="name">Friend Name:</label>
+      <input type="text" id="name" />
+      <label htmlFor="img-url">Image Url:</label>
+      <input
+        type="text"
+        value={`https://i.pravatar.cc/50?u${
+          Math.floor(Math.random() * 90000) + 10000
+        }`}
+      />
+      <input className="btn" type="submit" value="Add" />
+    </form>
   );
 }
 
