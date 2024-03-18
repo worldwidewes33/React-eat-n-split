@@ -25,11 +25,10 @@ body {
 
 .user-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 2rem;
-  background-color: var(--color-lightest);
   padding: 1rem 2rem;
-  border-radius: 10px;
 }
 
 .user-info img {
@@ -63,4 +62,16 @@ body {
 
 .green {
   color: #66a80f;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  border-radius: 10px;
+}
+
+li:hover {
+  background-color: var(--color-lightest);
 }
