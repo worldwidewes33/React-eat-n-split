@@ -23,7 +23,7 @@ body {
   justify-content: center;
 }
 
-.user-info {
+.friend-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,11 +32,11 @@ body {
   font-size: 1.4rem;
 }
 
-.user-info img {
+.friend-info img {
   border-radius: 50%;
 }
 
-.user-info .content {
+.friend-info .content {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
+import { useState } from "react";
 
-const users = [
+const initialFriends = [
   {
     id: 14569,
     name: "Taylor Green",
@@ -22,61 +23,101 @@ const users = [
 ];
 
 function App() {
-  const userAvatars = users.map((user) => (
-    <li key={user.id}>
-      <UserAvatar user={user} />
-    </li>
+  const [friends, setFriends] = useState(initialFriends);
+  const [showFriendForm, setShowFriendFrom] = useState(false);
+
+  function handleShowFriendForm() {
+    setShowFriendFrom(!showFriendForm);
+  }
+
+  function handleAddFriend(newFriend) {
+    setFriends([...friends, newFriend]);
+    setShowFriendFrom(!showFriendForm);
+  }
+
+  const userAvatars = friends.map((friend) => (
+    <UserAvatar key={friend.id} friend={friend} />
   ));
 
   return (
     <>
       <ul>{userAvatars}</ul>
-      <AddFriendForm />
-      <button className="btn add-btn">Add Friend</button>
+      {showFriendForm && <AddFriendForm addFriend={handleAddFriend} />}
+      <button className="btn add-btn" onClick={handleShowFriendForm}>
+        {showFriendForm ? "Close" : "Add Friend"}
+      </button>
     </>
   );
 }
 
-function UserAvatar({ user }) {
+function UserAvatar({ friend }) {
   return (
-    <div className="user-info">
-      <img src={user.photo_url} alt={user.name} />
+    <li className="friend-info">
+      <img src={friend.photo_url} alt={friend.name} />
       <div className="content">
-        <h3>{user.name}</h3>
-        {user.balance > 0 && (
-          <p className="green">{`${user.name} owes you $${user.balance}`}</p>
+        <h3>{friend.name}</h3>
+        {friend.balance > 0 && (
+          <p className="green">{`${friend.name} owes you $${friend.balance}`}</p>
         )}
-        {user.balance == 0 && <p>{`${user.name} and you are even`}</p>}
-        {user.balance < 0 && (
-          <p className="red">{`You owe ${user.name} $${Math.abs(
-            user.balance
+        {friend.balance == 0 && <p>{`${friend.name} and you are even`}</p>}
+        {friend.balance < 0 && (
+          <p className="red">{`You owe ${friend.name} $${Math.abs(
+            friend.balance
           )}`}</p>
         )}
       </div>
       <button className="btn">Select</button>
-    </div>
+    </li>
   );
 }
 
-function AddFriendForm() {
+UserAvatar.propTypes = {
+  friend: PropTypes.object.isRequired,
+};
+
+function AddFriendForm({ addFriend }) {
+  const [name, setName] = useState("");
+  const [imgUrl, setImgUrl] = useState("https://i.pravatar.cc/50");
+
+  function handleFormSubmission(e) {
+    e.preventDefault();
+
+    if (!name || !imgUrl) return;
+
+    const id = crypto.randomUUID();
+
+    const newFriend = {
+      id,
+      name,
+      balance: 0,
+      photo_url: `${imgUrl}?u${id}`,
+    };
+
+    addFriend(newFriend), setName("");
+    setImgUrl("https://i.pravatar.cc/50");
+  }
   return (
-    <form className="add-friend-form">
+    <form className="add-friend-form" onSubmit={handleFormSubmission}>
       <label htmlFor="name">Friend Name:</label>
-      <input type="text" id="name" />
+      <input
+        type="text"
+        id="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
       <label htmlFor="img-url">Image Url:</label>
       <input
         type="text"
-        value={`https://i.pravatar.cc/50?u${
-          Math.floor(Math.random() * 90000) + 10000
-        }`}
+        value={imgUrl}
+        onChange={(e) => setImgUrl(e.target.value)}
       />
       <input className="btn" type="submit" value="Add" />
     </form>
   );
 }
 
-UserAvatar.propTypes = {
-  user: PropTypes.object.isRequired,
+AddFriendForm.propTypes = {
+  addFriend: PropTypes.func,
 };
 
 export default App;
