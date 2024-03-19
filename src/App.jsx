@@ -41,11 +41,18 @@ function App() {
 
   return (
     <>
-      <ul>{userAvatars}</ul>
-      {showFriendForm && <AddFriendForm addFriend={handleAddFriend} />}
-      <button className="btn add-btn" onClick={handleShowFriendForm}>
-        {showFriendForm ? "Close" : "Add Friend"}
-      </button>
+      <div className="app">
+        <div className="side-bar">
+          <ul>{userAvatars}</ul>
+          {showFriendForm && <AddFriendForm addFriend={handleAddFriend} />}
+          <button className="btn add-btn" onClick={handleShowFriendForm}>
+            {showFriendForm ? "Close" : "Add Friend"}
+          </button>
+        </div>
+        <div className="main-content">
+          <SplitBillForm friend={friends[0]} />
+        </div>
+      </div>
     </>
   );
 }
@@ -93,7 +100,8 @@ function AddFriendForm({ addFriend }) {
       photo_url: `${imgUrl}?u${id}`,
     };
 
-    addFriend(newFriend), setName("");
+    addFriend(newFriend);
+    setName("");
     setImgUrl("https://i.pravatar.cc/50");
   }
   return (
@@ -118,6 +126,32 @@ function AddFriendForm({ addFriend }) {
 
 AddFriendForm.propTypes = {
   addFriend: PropTypes.func,
+};
+
+function SplitBillForm({ friend }) {
+  return (
+    <>
+      <h1>{`Split a Bill with ${friend.name}`}</h1>
+      <form className="split-bill-form">
+        <label>Bill value</label>
+        <input type="number" />
+        <label>Your Expense</label>
+        <input type="number" />
+        <label>{`${friend.name}'s Expense`}</label>
+        <input type="number" />
+        <label>Who is paying the bill</label>
+        <select>
+          <option value="user">You</option>
+          <option value="friend">{friend.name}</option>
+        </select>
+        <input type="submit" value="Split Bill" className="btn add-btn" />
+      </form>
+    </>
+  );
+}
+
+SplitBillForm.propTypes = {
+  friend: PropTypes.object,
 };
 
 export default App;

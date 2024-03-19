@@ -19,8 +19,16 @@ body {
   height: 100vh;
   color: #495057;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+}
+
+.app {
+  height: 66vh;
+  display: grid;
+  grid-template-columns: 34rem 48rem;
+  column-gap: 4rem;
+  align-items: start;
 }
 
 .friend-info {
@@ -100,4 +108,22 @@ form {
 .add-friend-form > .btn {
   grid-column: 2;
   justify-self: end;
+}
+
+.main-content {
+  background-color: var(--color-lightest);
+  padding: 4rem;
+  border-radius: 10px;
+}
+
+.main-content h1 {
+  text-transform: uppercase;
+}
+
+.split-bill-form {
+  grid-template-columns: 1fr 12rem;
+}
+
+.split-bill-form > .btn {
+  grid-column: 2;
 }
