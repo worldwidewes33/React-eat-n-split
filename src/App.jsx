@@ -25,6 +25,7 @@ const initialFriends = [
 function App() {
   const [friends, setFriends] = useState(initialFriends);
   const [showFriendForm, setShowFriendFrom] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState(null);
 
   function handleShowFriendForm() {
     setShowFriendFrom(!showFriendForm);
@@ -35,8 +36,37 @@ function App() {
     setShowFriendFrom(!showFriendForm);
   }
 
+  function handleFriendSelect(id) {
+    setSelectedFriend((f) => {
+      if (!f) {
+        return id;
+      } else {
+        return f === id ? null : id;
+      }
+    });
+  }
+
+  function handleSplitBill(id, expense) {
+    const newFriends = friends.map((f) => {
+      if (f.id === id) {
+        f.balance += expense;
+        return f;
+      } else {
+        return f;
+      }
+    });
+
+    setFriends(newFriends);
+    setSelectedFriend(null);
+  }
+
   const userAvatars = friends.map((friend) => (
-    <UserAvatar key={friend.id} friend={friend} />
+    <UserAvatar
+      key={friend.id}
+      friend={friend}
+      onSelect={handleFriendSelect}
+      selected={selectedFriend === friend.id}
+    />
   ));
 
   return (
@@ -49,15 +79,18 @@ function App() {
             {showFriendForm ? "Close" : "Add Friend"}
           </button>
         </div>
-        <div className="main-content">
-          <SplitBillForm friend={friends[0]} />
-        </div>
+        {selectedFriend && (
+          <SplitBillForm
+            friend={friends.filter((f) => f.id === selectedFriend)[0]}
+            updateBalanceFor={handleSplitBill}
+          />
+        )}
       </div>
     </>
   );
 }
 
-function UserAvatar({ friend }) {
+function UserAvatar({ friend, selected, onSelect }) {
   return (
     <li className="friend-info">
       <img src={friend.photo_url} alt={friend.name} />
@@ -73,13 +106,17 @@ function UserAvatar({ friend }) {
           )}`}</p>
         )}
       </div>
-      <button className="btn">Select</button>
+      <button className="btn" onClick={() => onSelect(friend.id)}>
+        {selected ? "Close" : "Select"}
+      </button>
     </li>
   );
 }
 
 UserAvatar.propTypes = {
   friend: PropTypes.object.isRequired,
+  selected: PropTypes.bool,
+  onSelect: PropTypes.func,
 };
 
 function AddFriendForm({ addFriend }) {
@@ -128,23 +165,55 @@ AddFriendForm.propTypes = {
   addFriend: PropTypes.func,
 };
 
-function SplitBillForm({ friend }) {
+function SplitBillForm({ friend, updateBalanceFor }) {
+  const [bill, setBill] = useState(0);
+  const [paidByUser, setPaidByUser] = useState(0);
+  const paidByFriend = bill ? bill - paidByUser : 0;
+  const [whoIsPlaying, setWhoIsPlaying] = useState("user");
+
+  function splitBill(e) {
+    e.preventDefault();
+
+    if (!bill) return;
+
+    updateBalanceFor(
+      friend.id,
+      whoIsPlaying === "user" ? +paidByFriend : paidByUser * -1
+    );
+  }
+
   return (
     <>
-      <h1>{`Split a Bill with ${friend.name}`}</h1>
       <form className="split-bill-form">
+        <h1>{`Split a Bill with ${friend.name}`}</h1>
         <label>Bill value</label>
-        <input type="number" />
+        <input
+          type="number"
+          value={bill}
+          onChange={(e) => setBill(e.target.value)}
+        />
         <label>Your Expense</label>
-        <input type="number" />
+        <input
+          type="number"
+          value={paidByUser}
+          onChange={(e) => setPaidByUser(e.target.value)}
+        />
         <label>{`${friend.name}'s Expense`}</label>
-        <input type="number" />
+        <input type="number" disabled value={paidByFriend} />
         <label>Who is paying the bill</label>
-        <select>
+        <select
+          value={whoIsPlaying}
+          onChange={(e) => setWhoIsPlaying(e.target.value)}
+        >
           <option value="user">You</option>
           <option value="friend">{friend.name}</option>
         </select>
-        <input type="submit" value="Split Bill" className="btn add-btn" />
+        <input
+          type="submit"
+          value="Split Bill"
+          className="btn add-btn"
+          onClick={splitBill}
+        />
       </form>
     </>
   );
@@ -152,6 +221,7 @@ function SplitBillForm({ friend }) {
 
 SplitBillForm.propTypes = {
   friend: PropTypes.object,
+  updateBalanceFor: PropTypes.func,
 };
 
 export default App;

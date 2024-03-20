@@ -110,20 +110,14 @@ form {
   justify-self: end;
 }
 
-.main-content {
-  background-color: var(--color-lightest);
-  padding: 4rem;
-  border-radius: 10px;
-}
-
-.main-content h1 {
-  text-transform: uppercase;
-}
-
 .split-bill-form {
   grid-template-columns: 1fr 12rem;
 }
 
 .split-bill-form > .btn {
   grid-column: 2;
+}
+
+.split-bill-form h1 {
+  grid-column: span 2;
 }
